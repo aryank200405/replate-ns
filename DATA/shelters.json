@@ -1,0 +1,38 @@
+[
+  {
+    "id": "rec-1",
+    "name": "Adsum House Shelter",
+    "type": "Shelter",
+    "lat": 44.6426,
+    "lon": -63.5887,
+    "cold_storage_kg": 40,
+    "accepts": ["prepared", "produce", "bakery", "dairy"]
+  },
+  {
+    "id": "rec-2",
+    "name": "Dalhousie Community Fridge",
+    "type": "Community Fridge",
+    "lat": 44.6366,
+    "lon": -63.5917,
+    "cold_storage_kg": 15,
+    "accepts": ["produce", "bakery", "packaged"]
+  },
+  {
+    "id": "rec-3",
+    "name": "Hope Cottage Community Kitchen",
+    "type": "Community Kitchen",
+    "lat": 44.6512,
+    "lon": -63.5829,
+    "cold_storage_kg": 60,
+    "accepts": ["prepared", "produce", "bakery", "dairy", "packaged"]
+  },
+  {
+    "id": "rec-4",
+    "name": "Feed Nova Scotia Hub",
+    "type": "Distribution Hub",
+    "lat": 44.6821,
+    "lon": -63.6095,
+    "cold_storage_kg": 250,
+    "accepts": ["prepared", "produce", "bakery", "dairy", "packaged"]
+  }
+]
