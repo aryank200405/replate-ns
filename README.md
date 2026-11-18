@@ -40,3 +40,34 @@ Every day, restaurants, cafes, and event venues discard large amounts of safe, e
 3. Install dependencies once:
    ```bash
    python -m pip install fastapi uvicorn
+
+
+   Hey Aashay & Nitya — RePlate NS MVP is built and pushed to GitHub!
+Here's our final game plan for tomorrow (Wed, Nov 18 — Deadline: 11:59 PM):
+
+1. WHAT'S ALREADY DONE & PUSHED
+• FastAPI 3-Agent Backend (BACKEND/main.py): Smart Vision photo scan, Auto-Triage (RED/YELLOW/GREEN/REJECTED + Allergen flags), Smart Routing (distance + live cold-storage capacity), Autonomous Fallback (Decline -> Auto-Reroute), and SQLite persistence.
+• Two-Portal UI (FRONTEND/frontend.html + styles.css): Restaurant/Business Portal + Shelter & Food Bank Portal with live impact KPIs and capacity bars.
+• Seed Data (data/shelters.json): 4 starter Halifax shelters/fridges.
+
+2. HOW TO PULL & RUN IT TOMORROW MORNING
+1. Clone `replate-ns` in VS Code (or click Sync Changes if already cloned).
+2. Run in VS Code terminal:
+   python -m pip install -r BACKEND/requirements.txt
+   python -m uvicorn BACKEND.main:app --reload
+3. Open FRONTEND/frontend.html in Chrome (or click Go Live in VS Code).
+
+3. WHO DOES WHAT TOMORROW (Nov 18)
+• Nitya (data/ & Pitch Lead):
+  1. Add 3–4 more Halifax shelters/community fridges to data/shelters.json.
+  2. Update our flowchart diagram (fix typos: Problem, Restaurants, Smart Vision) & draft the 3-minute video talking points.
+• Aashay (FRONTEND/ & QA Lead):
+  1. Test all 4 demo flows end-to-end (Smart Vision scan, Urgent RED dispatch, Expired REJECTED block, Decline -> Auto-Reroute).
+  2. Tweak any UI text/mobile spacing if needed and verify live capacity bars update cleanly.
+• Aryan (BACKEND/ & Integration Lead):
+  1. Review/merge any pulls, fix any backend bugs during testing, and prep the GitHub README for judges.
+
+4. TIMELINE FOR TOMORROW
+• 5:00 PM: Code & data freeze
+• 7:00 PM: Record & trim our max 3-minute demo video together
+• 10:00 PM: Submit Form #2 (GitHub link + 3-min video) well before 11:59 PM!
