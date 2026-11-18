@@ -43,7 +43,7 @@ Every day, restaurants, cafes, and event venues discard large amounts of safe, e
 
 
    Hey Aashay & Nitya — RePlate NS MVP is built and pushed to GitHub!
-Here's our final game plan for tomorrow (Wed, Nov 18 — Deadline: 11:59 PM):
+## Here's our final game plan for tomorrow (Wed, Nov 18 — Deadline: 11:59 PM):
 
 1. WHAT'S ALREADY DONE & PUSHED
 • FastAPI 3-Agent Backend (BACKEND/main.py): Smart Vision photo scan, Auto-Triage (RED/YELLOW/GREEN/REJECTED + Allergen flags), Smart Routing (distance + live cold-storage capacity), Autonomous Fallback (Decline -> Auto-Reroute), and SQLite persistence.
