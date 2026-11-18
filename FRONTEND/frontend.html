@@ -4,170 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RePlate NS — Surplus Food Rescue Network</title>
-  <style>
-    :root {
-      --bg: #f1f5f9;
-      --surface: #ffffff;
-      --ink: #0f172a;
-      --muted: #64748b;
-      --border: #e2e8f0;
-      --brand: #059669;
-      --brand-dark: #047857;
-      --brand-soft: #ecfdf5;
-    }
-    * { box-sizing: border-box; }
-    body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--ink);
-      margin: 0;
-      padding: 0;
-    }
-    .topbar {
-      background: linear-gradient(135deg, #064e3b 0%, #0f766e 100%);
-      color: #fff;
-      padding: 1.1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
-    }
-    .brand h1 { margin: 0; font-size: 1.4rem; letter-spacing: -0.02em; display: flex; align-items: center; gap: 0.5rem; }
-    .brand small { color: #a7f3d0; font-size: 0.85rem; }
-    .pill-live {
-      background: rgba(255,255,255,0.16);
-      padding: 0.2rem 0.6rem;
-      border-radius: 999px;
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-    .tabs { display: flex; gap: 0.5rem; background: rgba(0,0,0,0.2); padding: 0.3rem; border-radius: 10px; }
-    .tabs button {
-      padding: 0.55rem 1.1rem;
-      border: none;
-      background: transparent;
-      color: #d1fae5;
-      cursor: pointer;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      transition: all 0.15s ease;
-    }
-    .tabs button.active { background: #fff; color: #064e3b; box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
-    .container { max-width: 1120px; margin: 1.75rem auto; padding: 0 1.25rem; }
-    .layout-2col { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 1.25rem; align-items: start; }
-    @media (max-width: 860px) { .layout-2col { grid-template-columns: 1fr; } }
-    .card {
-      background: var(--surface);
-      padding: 1.4rem;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      box-shadow: 0 2px 8px rgba(15,23,42,0.04);
-      margin-bottom: 1.25rem;
-    }
-    .card h2 { margin: 0 0 0.3rem 0; font-size: 1.15rem; }
-    .sub { color: var(--muted); font-size: 0.88rem; margin-bottom: 1.1rem; }
-    .presets { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.1rem; }
-    .preset-btn {
-      background: var(--brand-soft);
-      color: var(--brand-dark);
-      border: 1px solid #a7f3d0;
-      padding: 0.38rem 0.75rem;
-      border-radius: 999px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .preset-btn:hover { background: #d1fae5; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; margin-bottom: 1.1rem; }
-    .full { grid-column: 1 / -1; }
-    label { display: block; font-size: 0.8rem; font-weight: 600; color: #334155; margin-bottom: 0.3rem; }
-    input, select {
-      width: 100%;
-      padding: 0.6rem 0.75rem;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      font-size: 0.92rem;
-      background: #f8fafc;
-    }
-    input:focus, select:focus { outline: 2px solid #10b981; background: #fff; border-color: transparent; }
-    .btn-primary {
-      width: 100%;
-      background: var(--brand);
-      color: #fff;
-      border: none;
-      padding: 0.85rem 1.25rem;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 0.95rem;
-      transition: background 0.15s ease;
-    }
-    .btn-primary:hover { background: var(--brand-dark); }
-    .btn-sm {
-      background: var(--brand);
-      color: #fff;
-      border: none;
-      padding: 0.5rem 0.9rem;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.84rem;
-    }
-    .pipeline { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin-bottom: 1rem; }
-    .agent-step {
-      background: #f8fafc;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 0.7rem;
-      text-align: center;
-      font-size: 0.8rem;
-    }
-    .agent-step.done { background: var(--brand-soft); border-color: #6ee7b7; color: #065f46; }
-    .agent-step.blocked { background: #fef2f2; border-color: #fca5a5; color: #991b1b; }
-    .agent-step strong { display: block; font-size: 0.84rem; margin-bottom: 0.15rem; }
-    pre {
-      background: #0f172a;
-      color: #e2e8f0;
-      padding: 1rem;
-      border-radius: 10px;
-      overflow-x: auto;
-      font-size: 0.83rem;
-      line-height: 1.5;
-      min-height: 150px;
-      margin: 0;
-    }
-    .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.25rem; }
-    .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.2rem; }
-    .kpi small { color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; }
-    .kpi .val { font-size: 1.9rem; font-weight: 800; color: #064e3b; margin-top: 0.25rem; }
-    .badge { padding: 0.25rem 0.65rem; border-radius: 999px; font-size: 0.74rem; font-weight: 700; display: inline-block; }
-    .RED { background: #fee2e2; color: #991b1b; }
-    .YELLOW { background: #fef3c7; color: #92400e; }
-    .GREEN { background: #dcfce7; color: #166534; }
-    .REJECTED { background: #e2e8f0; color: #334155; }
-    .alert-row {
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 0.9rem 1rem;
-      margin-bottom: 0.75rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #fafafa;
-    }
-    .rec-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.85rem; }
-    .rec-card { border: 1px solid var(--border); border-radius: 10px; padding: 0.9rem; background: #f8fafc; font-size: 0.85rem; }
-    .hidden { display: none; }
-  </style>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header class="topbar">
     <div class="brand">
       <h1>RePlate NS <span class="pill-live">Agentic AI</span></h1>
-      <small>Surplus Food Rescue Network — Halifax, Nova Scotia</small>
+      <small>Autonomous Surplus Food Rescue Network — Halifax, Nova Scotia</small>
     </div>
     <div class="tabs">
       <button id="tabDonor" class="active" onclick="switchRole('donor')">Restaurant / Business Portal</button>
@@ -175,15 +18,31 @@
     </div>
   </header>
 
+  <div class="status-strip">
+    <span>Partner Network: <b>4 Halifax Shelters &amp; Fridges</b></span>
+    <span>Storage Ledger: <b>SQLite Persistent</b></span>
+    <span>Food Safety &amp; Allergen Guardrail: <b>Active</b></span>
+    <span>API Security: <b>Key Verified</b></span>
+  </div>
+
   <main class="container">
     <section id="donorView" class="layout-2col">
       <div class="card">
         <h2>Post Surplus Food for Pickup</h2>
-        <div class="sub">Choose a sample closing-time scenario or enter your kitchen's surplus:</div>
+        <div class="sub">Upload a photo with Smart Vision or pick a quick closing-time scenario:</div>
+
+        <div class="vision-box">
+          <div>
+            <small>Smart Vision Intake (AI Auto-Fill)</small><br />
+            <span style="font-size:0.8rem; color:#475569;">Upload a photo of surplus trays or an expiry label to auto-fill details</span>
+          </div>
+          <input type="file" id="visionFile" accept="image/*" onchange="scanPhoto()" />
+        </div>
+
         <div class="presets">
-          <button class="preset-btn" onclick="loadPreset('Halifax Harbour Bistro','Prepared Pasta Trays','prepared',18,12)">Hot Pasta Trays (&lt;24h Urgent)</button>
-          <button class="preset-btn" onclick="loadPreset('Coburg Bakery','Artisan Bread &amp; Pastries','bakery',10,60)">Fresh Bakery Items (2-5 Days)</button>
-          <button class="preset-btn" onclick="loadPreset('Spring Garden Cafe','Expired Milk Cartons','dairy',12,-3)">Past-Due Dairy (Safety Block)</button>
+          <button class="preset-btn" onclick="loadPreset('Halifax Harbour Bistro','Prepared Pasta Trays','prepared','Gluten',18,12)">Hot Pasta Trays (&lt;24h Urgent)</button>
+          <button class="preset-btn" onclick="loadPreset('Coburg Bakery','Artisan Bread &amp; Pastries','bakery','Gluten',10,60)">Fresh Bakery Items (2-5 Days)</button>
+          <button class="preset-btn" onclick="loadPreset('Spring Garden Cafe','Expired Milk Cartons','dairy','Dairy',12,-3)">Past-Due Dairy (Safety Block)</button>
         </div>
         <div class="form-grid">
           <div class="full"><label>Restaurant or Business Name</label><input id="donorName" value="Halifax Harbour Bistro" /></div>
@@ -197,21 +56,36 @@
               <option value="packaged">Packaged / Dry Goods</option>
             </select>
           </div>
+          <div><label>Allergen Flag</label>
+            <select id="allergens">
+              <option value="None">None</option>
+              <option value="Gluten">Contains Gluten</option>
+              <option value="Dairy">Contains Dairy</option>
+              <option value="Nuts">Contains Nuts</option>
+            </select>
+          </div>
           <div><label>Estimated Weight (kg)</label><input id="weightKg" type="number" value="18" /></div>
-          <div class="full"><label>Safe Pickup Window (Hours Left)</label><input id="hoursExpiry" type="number" value="12" /></div>
+          <div><label>Safe Pickup Window (Hours Left)</label><input id="hoursExpiry" type="number" value="12" /></div>
         </div>
         <button class="btn-primary" onclick="submitSurplus()">Find Nearest Shelter &amp; Dispatch</button>
       </div>
 
       <div class="card">
         <h2>AI Safety &amp; Dispatch Log</h2>
-        <div class="sub">Real-time food-safety check, capacity matching, and alert dispatch</div>
+        <div class="sub">Autonomous triage, capacity matching, and instant alert routing</div>
         <div class="pipeline">
-          <div id="stepTriage" class="agent-step"><strong>1. Safety &amp; Urgency</strong><span>Waiting</span></div>
-          <div id="stepRoute" class="agent-step"><strong>2. Best Shelter Match</strong><span>Waiting</span></div>
-          <div id="stepAlert" class="agent-step"><strong>3. Pickup Alert</strong><span>Waiting</span></div>
+          <div id="stepTriage" class="agent-step"><strong>1. Safety &amp; Urgency</strong><span>Ready</span></div>
+          <div id="stepRoute" class="agent-step"><strong>2. Best Shelter Match</strong><span>Ready</span></div>
+          <div id="stepAlert" class="agent-step"><strong>3. Pickup Alert</strong><span>Ready</span></div>
         </div>
-        <pre id="traceBox">Click "Find Nearest Shelter &amp; Dispatch" to watch the AI agents coordinate the pickup...</pre>
+
+        <div id="traceList" class="trace-list">
+          <div class="trace-item"><strong>1. Auto-Triage Agent:</strong> Ready to score perishability (`RED` &lt;24h, `YELLOW` 2-5d, `GREEN` &gt;5d), flag allergens, and block expired items.</div>
+          <div class="trace-item"><strong>2. Smart Routing Agent:</strong> Ready to match by food type, live cold-storage capacity, and Halifax distance.</div>
+          <div class="trace-item"><strong>3. Instant Alert Agent:</strong> Ready to save to SQLite, dispatch alerts, and queue a backup shelter.</div>
+        </div>
+
+        <div id="matchSummary" class="match-summary hidden"></div>
       </div>
     </section>
 
@@ -224,12 +98,13 @@
 
       <div class="card">
         <h2>Active Pickup Requests</h2>
-        <div class="sub">Partner shelters and community fridges can claim matched deliveries in one click</div>
+        <div class="sub">Accept a pickup to update live storage capacity—or click <b>Decline (Full)</b> to trigger automatic re-routing</div>
+        <div id="rerouteBanner" class="hidden" style="background:#eff6ff; border:1px solid #93c5fd; color:#1e40af; padding:0.75rem 1rem; border-radius:10px; margin-bottom:0.9rem; font-size:0.86rem; font-weight:600;"></div>
         <div id="alertsList">No pickup requests yet. Post surplus food from the Restaurant / Business Portal first.</div>
       </div>
 
       <div class="card">
-        <h2>Halifax Partner Shelters &amp; Fridges</h2>
+        <h2>Halifax Partner Shelters &amp; Fridges (Live Capacity)</h2>
         <div id="recGrid" class="rec-grid"></div>
       </div>
     </section>
@@ -238,6 +113,7 @@
   <script>
     const API = "http://127.0.0.1:8000";
     const KEY = "replate-ns-demo-key";
+    let visionTrace = "";
 
     function switchRole(role) {
       document.getElementById("donorView").classList.toggle("hidden", role !== "donor");
@@ -247,12 +123,36 @@
       if (role === "recipient") loadDashboard();
     }
 
-    function loadPreset(donor, item, cat, kg, hrs) {
+    function loadPreset(donor, item, cat, allergen, kg, hrs) {
       document.getElementById("donorName").value = donor;
       document.getElementById("foodItem").value = item;
       document.getElementById("category").value = cat;
+      document.getElementById("allergens").value = allergen;
       document.getElementById("weightKg").value = kg;
       document.getElementById("hoursExpiry").value = hrs;
+    }
+
+    function renderTrace(lines, isBlocked = false) {
+      const box = document.getElementById("traceList");
+      box.innerHTML = lines.map(line =>
+        `<div class="trace-item ${isBlocked || line.includes("REJECTED") ? "warn" : ""}">${line}</div>`
+      ).join("");
+    }
+
+    async function scanPhoto() {
+      const fileInput = document.getElementById("visionFile");
+      if (!fileInput.files.length) return;
+      const form = new FormData();
+      form.append("file", fileInput.files[0]);
+      const res = await fetch(`${API}/api/vision-scan`, { method: "POST", headers: { "x-api-key": KEY }, body: form });
+      const data = await res.json();
+      document.getElementById("foodItem").value = data.detected.food_item;
+      document.getElementById("category").value = data.detected.category;
+      document.getElementById("allergens").value = data.detected.allergens;
+      document.getElementById("weightKg").value = data.detected.weight_kg;
+      document.getElementById("hoursExpiry").value = data.detected.hours_until_expiry;
+      visionTrace = data.trace;
+      renderTrace([visionTrace]);
     }
 
     function updatePipeline(status, tag) {
@@ -277,6 +177,7 @@
         donor_name: document.getElementById("donorName").value,
         food_item: document.getElementById("foodItem").value,
         category: document.getElementById("category").value,
+        allergens: document.getElementById("allergens").value,
         weight_kg: parseFloat(document.getElementById("weightKg").value),
         hours_until_expiry: parseFloat(document.getElementById("hoursExpiry").value)
       };
@@ -287,7 +188,18 @@
       });
       const data = await res.json();
       updatePipeline(data.status, data.triage?.tag || "");
-      document.getElementById("traceBox").textContent = (data.agent_trace || [JSON.stringify(data)]).join("\n");
+      const lines = visionTrace ? [visionTrace, ...(data.agent_trace || [])] : (data.agent_trace || []);
+      renderTrace(lines, data.status === "rejected");
+
+      const summary = document.getElementById("matchSummary");
+      if (data.status === "matched") {
+        summary.innerHTML = `<strong>Dispatch Confirmed (${data.alert.alert_id}):</strong> Routed to <b>${data.alert.recipient_name}</b>` +
+          (data.alert.backup_name ? ` (Backup ready: ${data.alert.backup_name})` : "");
+        summary.classList.remove("hidden");
+      } else {
+        summary.classList.add("hidden");
+      }
+      visionTrace = "";
     }
 
     async function loadDashboard() {
@@ -302,26 +214,46 @@
         <div class="alert-row">
           <div>
             <span class="badge ${a.triage_tag}">${a.triage_tag}</span>
+            ${a.allergens && a.allergens !== "None" ? `<span class="badge ALLERGEN">Allergen: ${a.allergens}</span>` : ""}
+            ${a.rerouted ? `<span class="badge REROUTED">AUTO-REROUTED</span>` : ""}
             <strong>${a.item} (${a.weight_kg} kg)</strong> from ${a.donor}<br/>
             <small style="color:#475569;">Routed to: <b>${a.recipient_name}</b> ${a.backup_name ? `• Backup: ${a.backup_name}` : ""}</small>
           </div>
-          ${a.status === "PENDING_CLAIM"
-            ? `<button class="btn-sm" onclick="claim('${a.alert_id}')">Accept Pickup</button>`
-            : `<span class="badge GREEN">Claimed</span>`}
+          <div class="actions">
+            ${a.status === "PENDING_CLAIM"
+              ? `<button class="btn-sm" onclick="claim('${a.alert_id}')">Accept Pickup</button>
+                 <button class="btn-decline" onclick="decline('${a.alert_id}')">Decline (Full)</button>`
+              : a.status === "CLAIMED"
+              ? `<span class="badge GREEN">Claimed</span>`
+              : `<span class="badge REJECTED">No Capacity</span>`}
+          </div>
         </div>
       `).join("") : "No pickup requests yet. Post surplus food from the Restaurant / Business Portal first.";
 
-      document.getElementById("recGrid").innerHTML = data.recipients.map(r => `
-        <div class="rec-card">
-          <strong>${r.name}</strong><br/>
-          <small style="color:#64748b;">${r.type} • ${r.cold_storage_kg} kg cold storage</small><br/>
-          <small>Accepts: ${r.accepts.join(", ")}</small>
-        </div>
-      `).join("");
+      document.getElementById("recGrid").innerHTML = data.recipients.map(r => {
+        const pct = Math.round((r.cold_storage_kg / r.max_storage_kg) * 100);
+        return `
+          <div class="rec-card">
+            <strong>${r.name}</strong><br/>
+            <small style="color:#475569;">${r.type} • <b>${r.cold_storage_kg} / ${r.max_storage_kg} kg</b> free</small>
+            <div class="cap-bar"><div class="cap-fill" style="width:${pct}%"></div></div>
+            <small>Accepts: ${r.accepts.join(", ")}</small>
+          </div>
+        `;
+      }).join("");
     }
 
     async function claim(id) {
       await fetch(`${API}/api/alerts/${id}/claim`, { method: "POST", headers: { "x-api-key": KEY } });
+      loadDashboard();
+    }
+
+    async function decline(id) {
+      const res = await fetch(`${API}/api/alerts/${id}/decline`, { method: "POST", headers: { "x-api-key": KEY } });
+      const data = await res.json();
+      const banner = document.getElementById("rerouteBanner");
+      banner.textContent = data.message;
+      banner.classList.remove("hidden");
       loadDashboard();
     }
   </script>
