@@ -21,53 +21,22 @@ Every day, restaurants, cafes, and event venues discard large amounts of safe, e
 
 ---
 
-## 2. What Is Built So Far (Live & Working)
+## 2. What Is Built So Far (Live & Pushed)
 - **Halifax Seed Network (`data/shelters.json`):** 4 local recipients (Adsum House Shelter, Dalhousie Community Fridge, Hope Cottage Community Kitchen, Feed Nova Scotia Hub) with GPS coordinates, cold-storage capacity, and accepted food types.
 - **3-Agent FastAPI Backend (`BACKEND/main.py`):**
-  - **Auto-Triage Agent:** Scores safety/urgency and blocks expired items.
-  - **Smart Routing Agent:** Filters by food type and cold-storage capacity, ranks by Haversine distance, and queues a backup recipient.
-  - **Instant Alert & Impact Agent:** Dispatches pickup alerts, handles one-click claiming, and updates the community impact ledger.
-  - **Security & Validation:** Pydantic schema validation and `x-api-key` header verification.
-- **Two-Portal Web UI (`FRONTEND/frontend.html`):**
-  - **Restaurant / Business Portal:** Surplus intake form, 1-click demo presets, 3-step pipeline tracker, and live AI reasoning trace.
-  - **Shelter & Food Bank Portal:** Live community impact KPIs, active pickup requests, and Halifax partner capacity grid.
+  - **Smart Vision Intake:** Scans uploaded food/label photos to auto-fill item details.
+  - **Auto-Triage Agent:** Scores safety/urgency (`RED`/`YELLOW`/`GREEN`), flags allergens, and blocks expired items (`REJECTED`).
+  - **Smart Routing & Fallback Agent:** Filters by food type and live cold-storage capacity, ranks by Haversine distance, queues a backup, and auto-reroutes on `Decline (Full)`.
+  - **SQLite Persistence & Security:** Stores alerts and the community impact ledger in `replate.db`, with Pydantic validation and `x-api-key` header verification.
+- **Two-Portal Web UI (`FRONTEND/frontend.html` + `FRONTEND/styles.css`):**
+  - **Restaurant / Business Portal:** Surplus intake form, Smart Vision upload, 1-click demo presets, 3-step pipeline tracker, and live AI reasoning log.
+  - **Shelter & Food Bank Portal:** Live community impact KPIs, active pickup requests (`Accept Pickup` / `Decline`), and Halifax partner live capacity bars.
 
 ---
 
 ## 3. How Teammates Pull & Run Locally
-1. Clone `replate-ns` in VS Code (`Ctrl+Shift+P` → `Git: Clone` → `Clone from GitHub`).
-2. Whenever someone pushes updates, click **Sync Changes** in VS Code's Source Control sidebar.
-3. Install dependencies once:
+1. Clone `replate-ns` in VS Code (`Ctrl+Shift+P` → `Git: Clone` → `Clone from GitHub`), or click **Sync Changes** if already cloned.
+2. Install dependencies and start the backend in the VS Code terminal:
    ```bash
-   python -m pip install fastapi uvicorn
-
-
-   Hey Aashay & Nitya — RePlate NS MVP is built and pushed to GitHub!
-## Here's our final game plan for tomorrow (Wed, Nov 18 — Deadline: 11:59 PM):
-
-1. WHAT'S ALREADY DONE & PUSHED
-• FastAPI 3-Agent Backend (BACKEND/main.py): Smart Vision photo scan, Auto-Triage (RED/YELLOW/GREEN/REJECTED + Allergen flags), Smart Routing (distance + live cold-storage capacity), Autonomous Fallback (Decline -> Auto-Reroute), and SQLite persistence.
-• Two-Portal UI (FRONTEND/frontend.html + styles.css): Restaurant/Business Portal + Shelter & Food Bank Portal with live impact KPIs and capacity bars.
-• Seed Data (data/shelters.json): 4 starter Halifax shelters/fridges.
-
-2. HOW TO PULL & RUN IT TOMORROW MORNING
-1. Clone `replate-ns` in VS Code (or click Sync Changes if already cloned).
-2. Run in VS Code terminal:
    python -m pip install -r BACKEND/requirements.txt
    python -m uvicorn BACKEND.main:app --reload
-3. Open FRONTEND/frontend.html in Chrome (or click Go Live in VS Code).
-
-3. WHO DOES WHAT TOMORROW (Nov 18)
-• Nitya (data/ & Pitch Lead):
-  1. Add 3–4 more Halifax shelters/community fridges to data/shelters.json.
-  2. Update our flowchart diagram (fix typos: Problem, Restaurants, Smart Vision) & draft the 3-minute video talking points.
-• Aashay (FRONTEND/ & QA Lead):
-  1. Test all 4 demo flows end-to-end (Smart Vision scan, Urgent RED dispatch, Expired REJECTED block, Decline -> Auto-Reroute).
-  2. Tweak any UI text/mobile spacing if needed and verify live capacity bars update cleanly.
-• Aryan (BACKEND/ & Integration Lead):
-  1. Review/merge any pulls, fix any backend bugs during testing, and prep the GitHub README for judges.
-
-4. TIMELINE FOR TOMORROW
-• 5:00 PM: Code & data freeze
-• 7:00 PM: Record & trim our max 3-minute demo video together
-• 10:00 PM: Submit Form #2 (GitHub link + 3-min video) well before 11:59 PM!
