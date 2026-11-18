@@ -40,3 +40,14 @@ Every day, restaurants, cafes, and event venues discard large amounts of safe, e
    ```bash
    python -m pip install -r BACKEND/requirements.txt
    python -m uvicorn BACKEND.main:app --reload
+
+
+   ---
+
+## 7. What Is Left Before Submission (Wed, Nov 18 — 11:59 PM)
+- [ ] **Expand Seed Data (`data/shelters.json`):** Add 3–4 more Halifax shelters and community fridges (Nitya).
+- [ ] **Update Flowchart Diagram:** Fix minor typos (*Problem*, *Restaurants*, *Smart Vision*) and add the fallback loop (Nitya).
+- [ ] **End-to-End QA & UI Polish (`FRONTEND/`):** Test all 4 live scenarios (Smart Vision, Urgent `RED`, Expired `REJECTED`, `Decline` → `Auto-Reroute`) and verify mobile/desktop spacing (Aashay).
+- [ ] **Code & Data Freeze:** Merge final pulls and verify clean startup from `README.md` at **5:00 PM** (Aryan).
+- [ ] **Record Demo Video:** Capture a **max 3-minute** walkthrough covering problem, live MVP demo, agentic architecture/security, and impact at **7:00 PM** (Full Team).
+- [ ] **Final Submission:** Submit Stage 2 Form #2 (GitHub repo link + 3-minute video) before **11:59 PM**.
