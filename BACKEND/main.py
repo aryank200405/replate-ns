@@ -8,7 +8,7 @@ from fastapi import FastAPI, File, Header, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-app = FastAPI(title="RePlate NS Agentic API", version="1.2.0")
+app = FastAPI(title="RePlate NS Agentic API", version="1.3.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -18,7 +18,9 @@ app.add_middleware(
 
 API_KEY = "replate-ns-demo-key"
 ROOT_DIR = Path(__file__).resolve().parent.parent
-DATA_PATH = ROOT_DIR / "data" / "shelters.json"
+DATA_PATH = ROOT_DIR / "DATA" / "shelters.json"
+if not DATA_PATH.exists():
+    DATA_PATH = ROOT_DIR / "data" / "shelters.json"
 DB_PATH = ROOT_DIR / "replate.db"
 
 RECIPIENTS = json.loads(DATA_PATH.read_text(encoding="utf-8"))
@@ -87,7 +89,7 @@ class SurplusRequest(BaseModel):
     donor_name: str = Field(..., min_length=2)
     food_item: str = Field(..., min_length=2)
     category: str
-    allergens: str = "None"
+    allergens: List[str] = Field(default_factory=list)
     weight_kg: float = Field(..., gt=0, le=500)
     hours_until_expiry: float = Field(..., ge=-24, le=720)
     donor_lat: float = 44.6488
@@ -138,19 +140,23 @@ def routing_agent(
 async def smart_vision_scan(file: UploadFile = File(...), x_api_key: str = Header(default="")):
     if x_api_key != API_KEY:
         raise HTTPException(status_code=401, detail="Invalid API key")
-    name = (file.filename or "").lower()
-    if "bread" in name or "bakery" in name or "pastry" in name:
-        detected = {"food_item": "Artisan Bread & Pastries", "category": "bakery", "allergens": "Gluten", "weight_kg": 10, "hours_until_expiry": 48}
-    elif "produce" in name or "salad" in name or "veg" in name:
-        detected = {"food_item": "Fresh Mixed Produce", "category": "produce", "allergens": "None", "weight_kg": 14, "hours_until_expiry": 36}
-    elif "milk" in name or "dairy" in name or "expired" in name:
-        detected = {"food_item": "Chilled Dairy Cartons", "category": "dairy", "allergens": "Dairy", "weight_kg": 12, "hours_until_expiry": -2}
-    else:
-        detected = {"food_item": "Prepared Catering Trays", "category": "prepared", "allergens": "Gluten", "weight_kg": 18, "hours_until_expiry": 10}
+    raw_bytes = await file.read()
+    size_kb = max(1, round(len(raw_bytes) / 1024))
+    name = (file.filename or "photo.jpg").lower()
 
+    if any(w in name for w in ["bread", "bakery", "pastry", "cake", "croissant"]):
+        detected = {"food_item": "Artisan Bread & Pastries", "category": "bakery", "allergens": ["Gluten", "Dairy"], "weight_kg": 10, "hours_until_expiry": 48}
+    elif any(w in name for w in ["produce", "salad", "veg", "fruit", "tomato"]):
+        detected = {"food_item": "Fresh Mixed Produce", "category": "produce", "allergens": [], "weight_kg": 14, "hours_until_expiry": 36}
+    elif any(w in name for w in ["milk", "dairy", "cheese", "expired", "yogurt"]):
+        detected = {"food_item": "Chilled Dairy Cartons", "category": "dairy", "allergens": ["Dairy"], "weight_kg": 12, "hours_until_expiry": -2}
+    else:
+        detected = {"food_item": "Prepared Catering Trays", "category": "prepared", "allergens": ["Gluten", "Dairy"], "weight_kg": 18, "hours_until_expiry": 10}
+
+    allergen_str = ", ".join(detected["allergens"]) if detected["allergens"] else "None"
     return {
         "detected": detected,
-        "trace": f"[Smart Vision Agent] Scanned '{file.filename}' -> {detected['food_item']} ({detected['weight_kg']} kg, Allergen: {detected['allergens']}).",
+        "trace": f"[Smart Vision Agent] Scanned '{file.filename}' ({size_kb} KB) -> {detected['food_item']} ({detected['weight_kg']} kg, Allergens: {allergen_str}).",
     }
 
 
@@ -161,7 +167,7 @@ def process_surplus(req: SurplusRequest, x_api_key: str = Header(default="")):
 
     trace = []
     triage = triage_agent(req)
-    allergen_note = f" | Allergen flag: {req.allergens}" if req.allergens != "None" else " | Allergen-free"
+    allergen_note = f" | Allergens: {', '.join(req.allergens)}" if req.allergens else " | Allergen-free"
     trace.append(f"[Auto-Triage Agent] Tagged {triage['tag']}: {triage['reason']}{allergen_note}")
 
     if not triage["safe"]:
@@ -197,6 +203,7 @@ def process_surplus(req: SurplusRequest, x_api_key: str = Header(default="")):
         "backup_name": backup["name"] if backup else None,
         "excluded_ids": [],
         "rerouted": False,
+        "rerouted_from": None,
         "status": "PENDING_CLAIM",
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
@@ -247,10 +254,11 @@ def decline_and_reroute(alert_id: str, x_api_key: str = Header(default="")):
             alert["recipient_name"] = next_rec["name"]
             alert["backup_name"] = next_backup["name"] if next_backup else None
             alert["rerouted"] = True
+            alert["rerouted_from"] = prev_name
             save_alert(alert)
             return {
                 "alert": alert,
-                "message": f"[Fallback Agent] {prev_name} full -> auto-rerouted to {next_rec['name']} ({next_rec['distance_km']} km).",
+                "message": f"AUTO-REROUTED: {prev_name} declined (Full) -> Re-assigned to {next_rec['name']} ({next_rec['distance_km']} km).",
             }
     raise HTTPException(status_code=404, detail="Pending alert not found")
 

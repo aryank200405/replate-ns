@@ -34,16 +34,18 @@
         <div class="vision-box">
           <div>
             <small>Smart Vision Intake (AI Auto-Fill)</small><br />
-            <span style="font-size:0.8rem; color:#475569;">Upload a photo of surplus trays or an expiry label to auto-fill details</span>
+            <span id="visionStatus" style="font-size:0.8rem; color:#475569;">Upload a photo of surplus trays or an expiry label to auto-fill details</span>
           </div>
           <input type="file" id="visionFile" accept="image/*" onchange="scanPhoto()" />
+          <img id="visionPreview" class="vision-preview hidden" alt="Uploaded food preview" />
         </div>
 
         <div class="presets">
-          <button class="preset-btn" onclick="loadPreset('Halifax Harbour Bistro','Prepared Pasta Trays','prepared','Gluten',18,12)">Hot Pasta Trays (&lt;24h Urgent)</button>
-          <button class="preset-btn" onclick="loadPreset('Coburg Bakery','Artisan Bread &amp; Pastries','bakery','Gluten',10,60)">Fresh Bakery Items (2-5 Days)</button>
-          <button class="preset-btn" onclick="loadPreset('Spring Garden Cafe','Expired Milk Cartons','dairy','Dairy',12,-3)">Past-Due Dairy (Safety Block)</button>
+          <button class="preset-btn" onclick="loadPreset('Halifax Harbour Bistro','Prepared Pasta Trays','prepared',['Gluten','Dairy'],18,12)">Hot Pasta Trays (&lt;24h Urgent)</button>
+          <button class="preset-btn" onclick="loadPreset('Coburg Bakery','Artisan Bread &amp; Pastries','bakery',['Gluten'],10,60)">Fresh Bakery Items (2-5 Days)</button>
+          <button class="preset-btn" onclick="loadPreset('Spring Garden Cafe','Expired Milk Cartons','dairy',['Dairy'],12,-3)">Past-Due Dairy (Safety Block)</button>
         </div>
+
         <div class="form-grid">
           <div class="full"><label>Restaurant or Business Name</label><input id="donorName" value="Halifax Harbour Bistro" /></div>
           <div class="full"><label>What's Available?</label><input id="foodItem" value="Prepared Pasta Trays" /></div>
@@ -56,16 +58,17 @@
               <option value="packaged">Packaged / Dry Goods</option>
             </select>
           </div>
-          <div><label>Allergen Flag</label>
-            <select id="allergens">
-              <option value="None">None</option>
-              <option value="Gluten">Contains Gluten</option>
-              <option value="Dairy">Contains Dairy</option>
-              <option value="Nuts">Contains Nuts</option>
-            </select>
-          </div>
           <div><label>Estimated Weight (kg)</label><input id="weightKg" type="number" value="18" /></div>
-          <div><label>Safe Pickup Window (Hours Left)</label><input id="hoursExpiry" type="number" value="12" /></div>
+          <div class="full">
+            <label>Allergens (Select all that apply)</label>
+            <div class="allergen-group">
+              <label class="allergen-pill"><input type="checkbox" name="allergen" value="Gluten" checked /> Gluten</label>
+              <label class="allergen-pill"><input type="checkbox" name="allergen" value="Dairy" /> Dairy</label>
+              <label class="allergen-pill"><input type="checkbox" name="allergen" value="Nuts" /> Nuts</label>
+              <label class="allergen-pill"><input type="checkbox" name="allergen" value="Soy" /> Soy</label>
+            </div>
+          </div>
+          <div class="full"><label>Safe Pickup Window (Hours Left)</label><input id="hoursExpiry" type="number" value="12" /></div>
         </div>
         <button class="btn-primary" onclick="submitSurplus()">Find Nearest Shelter &amp; Dispatch</button>
       </div>
@@ -80,7 +83,7 @@
         </div>
 
         <div id="traceList" class="trace-list">
-          <div class="trace-item"><strong>1. Auto-Triage Agent:</strong> Ready to score perishability (`RED` &lt;24h, `YELLOW` 2-5d, `GREEN` &gt;5d), flag allergens, and block expired items.</div>
+          <div class="trace-item"><strong>1. Auto-Triage Agent:</strong> Ready to score perishability (RED &lt;24h, YELLOW 2-5d, GREEN &gt;5d), flag multiple allergens, and block expired items.</div>
           <div class="trace-item"><strong>2. Smart Routing Agent:</strong> Ready to match by food type, live cold-storage capacity, and Halifax distance.</div>
           <div class="trace-item"><strong>3. Instant Alert Agent:</strong> Ready to save to SQLite, dispatch alerts, and queue a backup shelter.</div>
         </div>
@@ -99,7 +102,7 @@
       <div class="card">
         <h2>Active Pickup Requests</h2>
         <div class="sub">Accept a pickup to update live storage capacity—or click <b>Decline (Full)</b> to trigger automatic re-routing</div>
-        <div id="rerouteBanner" class="hidden" style="background:#eff6ff; border:1px solid #93c5fd; color:#1e40af; padding:0.75rem 1rem; border-radius:10px; margin-bottom:0.9rem; font-size:0.86rem; font-weight:600;"></div>
+        <div id="rerouteBanner" class="hidden" style="background:#dbeafe; border:1px solid #60a5fa; color:#1e3a8a; padding:0.85rem 1rem; border-radius:10px; margin-bottom:1rem; font-size:0.9rem; font-weight:700;"></div>
         <div id="alertsList">No pickup requests yet. Post surplus food from the Restaurant / Business Portal first.</div>
       </div>
 
@@ -123,11 +126,21 @@
       if (role === "recipient") loadDashboard();
     }
 
-    function loadPreset(donor, item, cat, allergen, kg, hrs) {
+    function setAllergens(list) {
+      document.querySelectorAll('input[name="allergen"]').forEach(cb => {
+        cb.checked = list.includes(cb.value);
+      });
+    }
+
+    function getSelectedAllergens() {
+      return Array.from(document.querySelectorAll('input[name="allergen"]:checked')).map(cb => cb.value);
+    }
+
+    function loadPreset(donor, item, cat, allergens, kg, hrs) {
       document.getElementById("donorName").value = donor;
       document.getElementById("foodItem").value = item;
       document.getElementById("category").value = cat;
-      document.getElementById("allergens").value = allergen;
+      setAllergens(allergens);
       document.getElementById("weightKg").value = kg;
       document.getElementById("hoursExpiry").value = hrs;
     }
@@ -141,18 +154,32 @@
 
     async function scanPhoto() {
       const fileInput = document.getElementById("visionFile");
+      const statusEl = document.getElementById("visionStatus");
+      const previewEl = document.getElementById("visionPreview");
       if (!fileInput.files.length) return;
-      const form = new FormData();
-      form.append("file", fileInput.files[0]);
-      const res = await fetch(`${API}/api/vision-scan`, { method: "POST", headers: { "x-api-key": KEY }, body: form });
-      const data = await res.json();
-      document.getElementById("foodItem").value = data.detected.food_item;
-      document.getElementById("category").value = data.detected.category;
-      document.getElementById("allergens").value = data.detected.allergens;
-      document.getElementById("weightKg").value = data.detected.weight_kg;
-      document.getElementById("hoursExpiry").value = data.detected.hours_until_expiry;
-      visionTrace = data.trace;
-      renderTrace([visionTrace]);
+
+      const file = fileInput.files[0];
+      previewEl.src = URL.createObjectURL(file);
+      previewEl.classList.remove("hidden");
+      statusEl.textContent = "Scanning photo with Smart Vision...";
+
+      try {
+        const form = new FormData();
+        form.append("file", file);
+        const res = await fetch(`${API}/api/vision-scan`, { method: "POST", headers: { "x-api-key": KEY }, body: form });
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        const data = await res.json();
+        document.getElementById("foodItem").value = data.detected.food_item;
+        document.getElementById("category").value = data.detected.category;
+        setAllergens(data.detected.allergens || []);
+        document.getElementById("weightKg").value = data.detected.weight_kg;
+        document.getElementById("hoursExpiry").value = data.detected.hours_until_expiry;
+        visionTrace = data.trace;
+        statusEl.textContent = `Detected: ${data.detected.food_item} (${data.detected.weight_kg} kg)`;
+        renderTrace([visionTrace]);
+      } catch (err) {
+        statusEl.textContent = `Smart Vision error: ${err.message}. Check that uvicorn is running.`;
+      }
     }
 
     function updatePipeline(status, tag) {
@@ -177,7 +204,7 @@
         donor_name: document.getElementById("donorName").value,
         food_item: document.getElementById("foodItem").value,
         category: document.getElementById("category").value,
-        allergens: document.getElementById("allergens").value,
+        allergens: getSelectedAllergens(),
         weight_kg: parseFloat(document.getElementById("weightKg").value),
         hours_until_expiry: parseFloat(document.getElementById("hoursExpiry").value)
       };
@@ -210,14 +237,20 @@
       document.getElementById("statCo2").textContent = data.ledger.co2_avoided_kg;
 
       const box = document.getElementById("alertsList");
-      box.innerHTML = data.alerts.length ? data.alerts.map(a => `
+      box.innerHTML = data.alerts.length ? data.alerts.map(a => {
+        const allergenList = Array.isArray(a.allergens) ? a.allergens : (a.allergens && a.allergens !== "None" ? [a.allergens] : []);
+        const allergenBadges = allergenList.map(al => `<span class="badge ALLERGEN">Allergen: ${al}</span>`).join(" ");
+        return `
         <div class="alert-row">
           <div>
             <span class="badge ${a.triage_tag}">${a.triage_tag}</span>
-            ${a.allergens && a.allergens !== "None" ? `<span class="badge ALLERGEN">Allergen: ${a.allergens}</span>` : ""}
+            ${allergenBadges}
             ${a.rerouted ? `<span class="badge REROUTED">AUTO-REROUTED</span>` : ""}
             <strong>${a.item} (${a.weight_kg} kg)</strong> from ${a.donor}<br/>
-            <small style="color:#475569;">Routed to: <b>${a.recipient_name}</b> ${a.backup_name ? `• Backup: ${a.backup_name}` : ""}</small>
+            <small style="color:#475569;">
+              ${a.rerouted_from ? `Re-routed from <s>${a.rerouted_from}</s> &rarr; ` : "Routed to: "}
+              <b>${a.recipient_name}</b> ${a.backup_name ? `• Backup: ${a.backup_name}` : ""}
+            </small>
           </div>
           <div class="actions">
             ${a.status === "PENDING_CLAIM"
@@ -228,7 +261,8 @@
               : `<span class="badge REJECTED">No Capacity</span>`}
           </div>
         </div>
-      `).join("") : "No pickup requests yet. Post surplus food from the Restaurant / Business Portal first.";
+      `;
+      }).join("") : "No pickup requests yet. Post surplus food from the Restaurant / Business Portal first.";
 
       document.getElementById("recGrid").innerHTML = data.recipients.map(r => {
         const pct = Math.round((r.cold_storage_kg / r.max_storage_kg) * 100);
